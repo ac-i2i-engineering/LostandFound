@@ -57,6 +57,10 @@
         h1 {
             color: #FFD700; /* Amherst Gold */
         }
+        label {
+        color: #333; /* Dark text color */
+        font-weight: 600; /* Optional: Make labels bold */
+    }
         .gradient-bg {
             background: linear-gradient(135deg, #4B2E83 0%, #3A1D6E 50%, #2A1055 100%);
             background-size: 200% 200%;
@@ -326,34 +330,28 @@
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Counter animation
             const counters = document.querySelectorAll('[data-count]');
-            const speed = 200;
-            
+            const speed = 200; // Adjust speed for animation
+
             counters.forEach(counter => {
-                const target = +counter.getAttribute('data-count');
-                const count = +counter.innerText;
-                const increment = target / speed;
-                
-                if (count < target) {
-                    counter.innerText = Math.ceil(count + increment);
-                    setTimeout(updateCounter, 1);
-                } else {
-                    counter.innerText = target;
-                }
-                
-                function updateCounter() {
-                    const count = +counter.innerText;
-                    const increment = target / speed;
-                    
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + increment);
-                        setTimeout(updateCounter, 1);
+                const target = +counter.getAttribute('data-count'); // Get the target value
+                const updateCounter = () => {
+                    const current = +counter.innerText; // Get the current value
+                    const increment = Math.ceil(target / speed); // Calculate the increment
+
+                    if (current < target) {
+                        counter.innerText = current + increment > target ? target : current + increment;
+                        setTimeout(updateCounter, 10); // Adjust timing for smoother animation
                     } else {
-                        counter.innerText = target;
+                        counter.innerText = target; // Ensure it ends at the target value
                     }
-                }
+                };
+
+                // Initialize counter to 0 and start animation
+                counter.innerText = '0';
+                updateCounter();
             });
 
             // Mobile menu toggle
