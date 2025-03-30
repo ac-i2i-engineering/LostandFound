@@ -58,7 +58,12 @@ def item_create(request):
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            item = form.save(commit=False)
+            # Only assign reported_by if user is authenticated
+            if request.user.is_authenticated:
+                item.reported_by = request.user
+            # If user is not authenticated, reported_by remains None
+            item.save()
             return redirect('item_list')
     else:
         form = ItemForm()
