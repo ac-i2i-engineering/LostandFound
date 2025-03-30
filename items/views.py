@@ -24,7 +24,7 @@ def item_list(request):
     locations = Location.objects.all()
 
     # Get search and filter parameters
-    keyword = request.GET.get('keyword')
+    keyword = request.GET.get('keyword', '')
     location = request.GET.get('location')
     status = request.GET.get('status')
 

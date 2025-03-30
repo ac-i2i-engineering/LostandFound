@@ -6,11 +6,21 @@
 <section class="container mx-auto px-6 py-8">
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
         <h1 class="text-3xl font-serif font-bold text-amherst-purple mb-6 text-center">Login</h1>
+        
+        <!-- Display non-field errors -->
+        {% if form.non_field_errors %}
+        <div class="mb-4 text-sm text-center">
+            {% for error in form.non_field_errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         <form method="post" class="flex flex-col w-full items-center">
             {% csrf_token %}
             <div class="w-full flex flex-col items-center">
                 {% for field in form %}
-                <div class="mb-8 w-full max-w-xs"> <!-- Removed text-center from container -->
+                <div class="mb-8 w-full max-w-xs">
                     <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-amherst-purple mb-2 text-left">{{ field.label }}</label>
                     <input type="{{ field.field.widget.input_type }}" 
                            name="{{ field.html_name }}" 
