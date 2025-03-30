@@ -7,8 +7,17 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
+import torch
+from torchvision import models, transforms
+from PIL import Image
+import json
+import pillow_heif  # Adds HEIC support to Pillow
+from torchvision.models import ResNet50_Weights
 
+from django.conf import settings
+import os
 
 def item_list(request):
     items = Item.objects.all().select_related('location')
@@ -21,7 +30,14 @@ def item_list(request):
 
     # Apply filters
     if keyword:
-        items = items.filter(name__icontains=keyword)  # Search by keyword in item name
+        items = items.filter(
+            Q(name__icontains=keyword) |
+            Q(description__icontains=keyword) |
+            Q(location__name__icontains=keyword) |
+            Q(date_reported__icontains=keyword) |
+            Q(reported_by__username__icontains=keyword) |
+            Q(image_recognition_result__icontains=keyword)
+        )
     if location:
         items = items.filter(location__id=location)
     if status:
@@ -37,6 +53,7 @@ def item_list(request):
     return render(request, 'items/item_list.html', context)
 
 # New view for item submission
+"""
 def item_create(request):
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES)
@@ -48,6 +65,7 @@ def item_create(request):
 
     context = {'form': form}
     return render(request, 'items/item_form.html', context)
+"""
 
 def home(request):
     return render(request, 'base.html')
@@ -80,12 +98,60 @@ def user_logout(request):
     logout(request)
     return redirect('item_list')
 
+def recognize_image(image):
+    # Load ImageNet class labels from a JSON file
+    with open(os.path.join(settings.BASE_DIR, "items", "imagenet_classes.json"), "r") as f:
+        imagenet_classes = json.load(f)
+    imagenet_classes = {idx: label for idx, label in enumerate(imagenet_classes)}
+
+
+    # Load a pre-trained ResNet model
+    model = models.resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
+    model.eval()  # Set the model to evaluation mode
+
+
+    # Define the image preprocessing pipeline
+    preprocess = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+
+    # Open and preprocess the image
+    if image.name.lower().endswith((".heic", ".heif")):
+        heif_file = pillow_heif.read_heif(image)
+        img = Image.frombytes(
+            heif_file.mode, heif_file.size, heif_file.data, "raw"
+        ).convert("RGB")
+    elif image.name.lower().endswith((".jpg", ".jpeg", ".png")):
+        img = Image.open(image).convert("RGB")
+    else:
+        raise ValueError("Unsupported file format. Please use .jpg, .jpeg, .png, or .heic.")
+
+    img_tensor = preprocess(img).unsqueeze(0)  # Add batch dimension
+
+
+    # Perform prediction
+    with torch.no_grad():
+        outputs = model(img_tensor)
+        _, predicted_idx = torch.max(outputs, 1)
+        result = imagenet_classes[predicted_idx.item()]
+
+    return result
+
+
 def item_create(request):
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES)
         if form.is_valid():
             item = form.save(commit=False)
             item.reported_by = request.user
+            
+            # Perform image recognition
+            if item.image:
+                image_path = item.image.path
+                item.image_recognition_result = recognize_image(item.image)
+
             item.save()
             return redirect('item_list')
     else:

@@ -58,6 +58,10 @@
             <p><strong>Submitted by:</strong> Anonymous</p>
         {% endif %}
 
+        {% if item.image_recognition_result %}
+            <p><strong>AI Image Recognition:</strong> {{ item.image_recognition_result }}</p>
+        {% endif %}
+
         {% if item.image %}
             <img src="{{ item.image.url }}" alt="{{ item.name }}" width="200">
         {% endif %}
