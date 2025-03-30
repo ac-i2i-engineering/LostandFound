@@ -11,7 +11,12 @@ class Item(models.Model):
     date_lost_or_found = models.DateTimeField()
     location = models.ForeignKey('locations.Location', on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Lost')
-    # reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    reported_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.name} - {self.status}"
