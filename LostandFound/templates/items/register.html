@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Item</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Register Lost Item</h1>
+    <form action="/items/register" method="post">
+        <label for="item-name">Item Name:</label>
+        <input type="text" id="item-name" name="item_name" required>
+        <br>
+        
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+        <br>
+        
+        <label for="location">Last Seen Location:</label>
+        <input type="text" id="location" name="location" required>
+        <br>
+        
+        <label for="date-lost">Date Lost:</label>
+        <input type="date" id="date-lost" name="date_lost" required>
+        <br>
+        
+        <label for="contact-info">Contact Information:</label>
+        <input type="text" id="contact-info" name="contact_info" required>
+        <br>
+        
+        <button type="submit">Register Item</button>
+    </form>
+</body>
+</html>
