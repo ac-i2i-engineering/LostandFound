@@ -120,3 +120,12 @@ def item_delete(request, pk):
 def user_profile(request):
     user_items = Item.objects.filter(reported_by=request.user)
     return render(request, 'items/profile.html', {'user_items': user_items})
+
+def about(request):
+    return render(request, 'home/about.html')
+
+def faq(request):
+    return render(request, 'home/faq.html')
+
+def policies(request):
+    return render(request, 'home/policies.html')
