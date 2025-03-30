@@ -1,23 +1,14 @@
+{% extends 'base.html' %}
 
-<!-- Add this at the top of your item_list.html -->
-<a href="{% url 'item_create' %}">Submit a new lost/found item</a>
-<hr>
+{% block title %}Submit Item | Amherst Lost & Found{% endblock %}
 
-<!-- templates/items/item_form.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Submit Item | Amherst Lost & Found</title>
-</head>
-<body>
-    <h2>Submit Lost or Found Item</h2>
-    <form method="post" enctype="multipart/form-data">
+{% block content %}
+<section class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-serif font-bold text-amherst-purple mb-6">Submit Lost or Found Item</h1>
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Submit Item</button>
+        <button type="submit" class="bg-amherst-gold text-amherst-purple px-6 py-3 rounded-full">Submit</button>
     </form>
-
-    <a href="{% url 'item_list' %}">← Back to items list</a>
-</body>
-</html>
-
+</section>
+{% endblock %}

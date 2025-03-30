@@ -1,8 +1,18 @@
-<!-- templates/items/login.html -->
-<h2>User Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
-<a href="{% url 'register' %}">Don't have an account? Register here</a>
+{% extends 'base.html' %}
+
+{% block title %}Login | Amherst Lost & Found{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-serif font-bold text-amherst-purple mb-6">Login</h1>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-amherst-gold text-amherst-purple px-6 py-3 rounded-full">Login</button>
+    </form>
+    <p class="mt-4">
+        Don't have an account? 
+        <a href="{% url 'register' %}" class="text-amherst-gold hover:underline">Register here</a>.
+    </p>
+</section>
+{% endblock %}

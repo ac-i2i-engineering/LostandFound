@@ -47,7 +47,7 @@ def item_create(request):
     return render(request, 'items/item_form.html', context)
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'base.html')
 
 def register(request):
     if request.method == 'POST':
