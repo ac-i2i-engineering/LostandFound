@@ -14,9 +14,14 @@ def item_list(request):
     items = Item.objects.all().select_related('location')
     locations = Location.objects.all()
 
+    # Get search and filter parameters
+    keyword = request.GET.get('keyword')
     location = request.GET.get('location')
     status = request.GET.get('status')
 
+    # Apply filters
+    if keyword:
+        items = items.filter(name__icontains=keyword)  # Search by keyword in item name
     if location:
         items = items.filter(location__id=location)
     if status:
@@ -25,6 +30,9 @@ def item_list(request):
     context = {
         'items': items,
         'locations': locations,
+        'keyword': keyword,
+        'selected_location': location,
+        'selected_status': status,
     }
     return render(request, 'items/item_list.html', context)
 
