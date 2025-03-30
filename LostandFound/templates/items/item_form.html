@@ -1,0 +1,23 @@
+
+<!-- Add this at the top of your item_list.html -->
+<a href="{% url 'item_create' %}">Submit a new lost/found item</a>
+<hr>
+
+<!-- templates/items/item_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Item | Amherst Lost & Found</title>
+</head>
+<body>
+    <h2>Submit Lost or Found Item</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Item</button>
+    </form>
+
+    <a href="{% url 'item_list' %}">← Back to items list</a>
+</body>
+</html>
+

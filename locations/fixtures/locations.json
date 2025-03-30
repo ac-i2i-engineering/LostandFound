@@ -1,0 +1,7 @@
+[
+    {"model": "locations.location", "pk": 1, "fields": {"name": "Frost Library"}},
+    {"model": "locations.location", "pk": 2, "fields": {"name": "Valentine Dining Hall"}},
+    {"model": "locations.location", "pk": 3, "fields": {"name": "Johnson Chapel"}},
+    {"model": "locations.location", "pk": 4, "fields": {"name": "Keefe Campus Center"}},
+    {"model": "locations.location", "pk": 5, "fields": {"name": "Alumni Gym"}}
+]
