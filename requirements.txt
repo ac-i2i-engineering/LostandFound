@@ -1,0 +1,12 @@
+django
+djangorestframework
+django-cors-headers
+django-filter
+django-extensions
+pillow
+python-dotenv
+transformers
+sentence-transformers
+faiss-cpu
+langchain
+huggingface-hub
