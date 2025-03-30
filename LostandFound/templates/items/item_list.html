@@ -4,28 +4,18 @@
 
 {% block content %}
 <section class="container mx-auto px-6 py-8">
-    {% if user.is_authenticated %}
-        <p class="text-lg">Welcome, <strong>{{ user.username }}</strong>! | 
-            <a href="{% url 'logout' %}" class="text-amherst-gold hover:underline">Logout</a>
-        </p>
-    {% else %}
-        <p class="text-lg">
-            <a href="{% url 'login' %}" class="text-amherst-gold hover:underline">Login</a> | 
-            <a href="{% url 'register' %}" class="text-amherst-gold hover:underline">Register</a>
-        </p>
-    {% endif %}
+    <h1 class="text-4xl font-serif font-bold mb-8">Lost & Found Items</h1>
 
-    <h1 class="text-3xl font-serif font-bold text-amherst-purple mt-8">Lost & Found Items</h1>
     <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 bg-white/80 z-50 flex items-center justify-center hidden">
         <p class="text-xl font-semibold text-amherst-dark">Loading, please wait...</p>
     </div>
 
     <!-- Search and Filter Form -->
-    <form method="get" onsubmit="showLoadingScreen()" class="mt-6">
+    <form method="get" onsubmit="showLoadingScreen()" class="flex flex-wrap gap-4 items-center mb-8">
         <input type="text" name="keyword" placeholder="Search by keyword" value="{{ keyword }}" 
-               class="border px-4 py-2 rounded">
-        <select name="location" class="border px-4 py-2 rounded">
+               class="border border-gray-300 px-4 py-2 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-amherst-gold">
+        <select name="location" class="border border-gray-300 px-4 py-2 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-amherst-gold">
             <option value="">All Locations</option>
             {% for loc in locations %}
             <option value="{{ loc.id }}" {% if loc.id|stringformat:"s" == selected_location %}selected{% endif %}>
@@ -33,50 +23,50 @@
             </option>
             {% endfor %}
         </select>
-        <select name="status" class="border px-4 py-2 rounded">
+        <select name="status" class="border border-gray-300 px-4 py-2 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-amherst-gold">
             <option value="">All Statuses</option>
             <option value="Lost" {% if selected_status == "Lost" %}selected{% endif %}>Lost</option>
             <option value="Found" {% if selected_status == "Found" %}selected{% endif %}>Found</option>
             <option value="Returned" {% if selected_status == "Returned" %}selected{% endif %}>Returned</option>
         </select>
-        <button type="submit" class="bg-amherst-gold text-amherst-purple px-4 py-2 rounded">Search</button>
+        <button type="submit" class="bg-amherst-gold text-amherst-purple px-6 py-2 rounded shadow-md hover:bg-amber-200 transition-all">
+            Search
+        </button>
     </form>
 
     <hr class="my-8">
 
-    <!-- Items List -->
-    {% for item in items %}
-    <div>
-        <h3>{{ item.name }} ({{ item.status }})</h3>
-        <p>{{ item.description }}</p>
-        <p><strong>Location:</strong> {{ item.location.name }}</p>
-        <p><strong>Date:</strong> {{ item.date_reported }}</p>
-        
-        {% if item.reported_by %}
-            <p><strong>Submitted by:</strong> {{ item.reported_by.username }}</p>
-        {% else %}
-            <p><strong>Submitted by:</strong> Anonymous</p>
-        {% endif %}
-
-        {% if item.image_recognition_result %}
-            <p><strong>AI Image Recognition:</strong> {{ item.image_recognition_result }}</p>
-        {% endif %}
-
-        {% if item.image %}
-            <img src="{{ item.image.url }}" alt="{{ item.name }}" width="200">
-        {% endif %}
-
-        {% if user == item.reported_by %}
-            <p>
-                <a href="{% url 'item_edit' item.pk %}">Edit</a> |
-                <a href="{% url 'item_delete' item.pk %}">Delete</a>
-            </p>
-        {% endif %}
+    <!-- Items Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for item in items %}
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-48 object-cover rounded-md mb-4">
+            {% endif %}
+            <h3 class="text-xl font-bold text-amherst-purple mb-2">{{ item.name }} ({{ item.status }})</h3>
+            <p class="text-gray-700 mb-2">{{ item.description }}</p>
+            <p class="text-sm text-gray-600"><strong>Location:</strong> {{ item.location.name }}</p>
+            <p class="text-sm text-gray-600"><strong>Date:</strong> {{ item.date_reported }}</p>
+            {% if item.reported_by %}
+            <p class="text-sm text-gray-600"><strong>Submitted by:</strong> {{ item.reported_by.username }}</p>
+            {% else %}
+            <p class="text-sm text-gray-600"><strong>Submitted by:</strong> Anonymous</p>
+            {% endif %}
+            {% if item.image_recognition_result %}
+            <p class="text-sm text-gray-600"><strong>AI Image Recognition:</strong> {{ item.image_recognition_result }}</p>
+            {% endif %}
+            {% if user == item.reported_by %}
+            <div class="mt-4 flex gap-4">
+                <a href="{% url 'item_edit' item.pk %}" class="text-amherst-purple hover:underline">Edit</a>
+                <a href="{% url 'item_delete' item.pk %}" class="text-red-600 hover:underline">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="col-span-full text-center text-gray-600">No items available yet.</p>
+        {% endfor %}
     </div>
-    <hr>
-{% empty %}
-    <p>No items available yet.</p>
-{% endfor %}
+</section>
 
 <script>
     // Function to show the loading screen

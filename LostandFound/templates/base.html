@@ -51,6 +51,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style type="text/css">
+        p, h3 {
+            color: white;
+        }
+        h1 {
+            color: #FFD700; /* Amherst Gold */
+        }
         .gradient-bg {
             background: linear-gradient(135deg, #4B2E83 0%, #3A1D6E 50%, #2A1055 100%);
             background-size: 200% 200%;
@@ -100,7 +106,6 @@
     </style>
 </head>
 <body class="relative font-sans text-amherst-dark bg-white overflow-x-hidden">
-    {% block content %}
     <!-- Animated Gradient Background -->
     <div class="fixed inset-0 gradient-bg -z-50"></div>
 
@@ -144,8 +149,6 @@
                         </a>
                     </li>
                     <li>
-                        
-                        
                         {% if user.is_authenticated %}
                             <a href="{% url 'logout' %}" class="ml-4 bg-amherst-gold text-amherst-purple px-5 py-2 rounded-full font-semibold hover:shadow-md transition-all duration-200 flex items-center gap-2">
                                 <i class="fas fa-user"></i>
@@ -167,64 +170,69 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="min-h-screen pt-32 pb-20 flex flex-col md:flex-row items-center px-6">
-        <div class="container mx-auto flex flex-col md:flex-row items-center">
-            <div class="md:w-1/2 mb-12 md:mb-0 md:pr-10 text-center md:text-left">
-                <h2 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6 overflow-hidden whitespace-nowrap border-r-4 border-amherst-gold animate-typewriter animate-blink-caret">
-                    Reuniting the 
-                    <br> Amherst Community
-                </h2>
-                <p class="text-xl text-white/90 mb-8 animate-fade-in opacity-0 animation-delay-2000">
-                    Lost something on campus? Found an item? Let us help.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                    <a href="/items/new/" class="bg-amherst-purple text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300">
-                        <i class="fas fa-question-circle"></i>
-                        Report Lost Item
-                    </a>
-                    <a href="/items/" class="bg-amherst-gold text-amherst-purple px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300">
-                        <i class="fas fa-check-circle"></i>
-                        Browse Found Items
-                    </a>
+    <!-- Add spacing after the header -->
+    <main class="pt-24">
+        {% block content %}
+        <!-- Hero Section -->
+        <section class="min-h-screen pt-32 pb-20 flex flex-col md:flex-row items-center px-6">
+            <div class="container mx-auto flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0 md:pr-10 text-center md:text-left">
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6 overflow-hidden whitespace-nowrap border-r-4 border-amherst-gold animate-typewriter animate-blink-caret">
+                        Reuniting the 
+                        <br> Amherst Community
+                    </h2>
+                    <p class="text-xl text-white/90 mb-8 animate-fade-in opacity-0 animation-delay-2000">
+                        Lost something on campus? Found an item? Let us help.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                        <a href="/items/new/" class="bg-amherst-purple text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300">
+                            <i class="fas fa-question-circle"></i>
+                            Report Lost Item
+                        </a>
+                        <a href="/items/" class="bg-amherst-gold text-amherst-purple px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300">
+                            <i class="fas fa-check-circle"></i>
+                            Browse Found Items
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 flex justify-center">
+                    <img src="{% static 'images/campus-illustration.png' %}" alt="Amherst Campus" class="max-w-md w-full animate-float">
                 </div>
             </div>
-            
-            <div class="md:w-1/2 flex justify-center">
-                <img src="{% static 'images/campus-illustration.png' %}" alt="Amherst Campus" class="max-w-md w-full animate-float">
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Stats Section -->
-    <section class="py-16 bg-white relative z-10 rounded-t-3xl shadow-xl">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div class="p-6">
-                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ items_reunited }}">{{ items_reunited }}</h3>
-                    <p class="text-lg text-amherst-purple font-semibold">Items Reunited</p>
-                </div>
-                <div class="p-6 relative">
-                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ success_rate }}">{{ success_rate }}</h3>
-                    <p class="text-lg text-amherst-purple font-semibold">Success Rate</p>
-                    <span class="absolute top-8 right-16 text-2xl text-amherst-purple">%</span>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ avg_response_time }}">{{ avg_response_time }}</h3>
-                    <p class="text-lg text-amherst-purple font-semibold">Hour Response</p>
+        <!-- Stats Section -->
+        <section class="py-16 bg-white relative z-10 rounded-t-3xl shadow-xl">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6">
+                        <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ items_reunited }}">{{ items_reunited }}</h3>
+                        <p class="text-lg text-amherst-purple font-semibold">Items Reunited</p>
+                    </div>
+                    <div class="p-6 relative">
+                        <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ success_rate }}">{{ success_rate }}</h3>
+                        <p class="text-lg text-amherst-purple font-semibold">Success Rate</p>
+                        <span class="absolute top-8 right-16 text-2xl text-amherst-purple">%</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ avg_response_time }}">{{ avg_response_time }}</h3>
+                        <p class="text-lg text-amherst-purple font-semibold">Hour Response</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Wave Transition -->
-    <div class="wave-shape -mb-1">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
-            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
-            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
-        </svg>
-    </div>
+        <!-- Wave Transition -->
+        <div class="wave-shape -mb-1">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        {% endblock %}
+    </main>
 
     <!-- Footer -->
     <footer class="bg-amherst-purple text-white pt-20 pb-10 relative z-0">
@@ -316,7 +324,6 @@
         </div>
     </footer>
 
-    {% endblock %}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
