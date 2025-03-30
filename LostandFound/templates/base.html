@@ -27,8 +27,8 @@
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
                         'pulse-slow': 'pulse 3s ease-in-out infinite',
-                        'typewriter': 'typewriter 2s steps(24) 1s 1 normal both',
-                        'blink-caret': 'blink-caret 750ms steps(24) infinite',
+                        'typewriter': 'typewriter 2s steps(24, end) 1s 1 normal both',
+                        'blink-caret': 'blink-caret 750ms steps(24, end) infinite',
                     },
                     keyframes: {
                         float: {
@@ -114,7 +114,7 @@
     <header class="fixed w-full glass-effect border-b border-white/20 z-40">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="{% static 'amherst-logo.png' %}" alt="Amherst Logo" class="h-12 animate-pulse-slow">
+                <img src="{% static 'images/amherst-logo.png' %}" alt="Amherst Logo" class="h-20 w-20 animate-pulse-slow">
                 <div>
                     <h1 class="text-white font-serif text-xl font-bold">Amherst College</h1>
                     <p class="text-amherst-gold font-semibold relative inline-block after:content-[''] after:absolute after:w-full after:h-0.5 after:bg-amherst-gold after:-bottom-1 after:left-0">
@@ -179,11 +179,11 @@
                     Lost something on campus? Found an item? Let us help.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                    <a href="/items/new/" class="bg-amherst-purple hover:bg-amherst-darkpurple text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300 hover:shadow-lg animate-pulse animate-infinite animate-duration-[2000ms]">
+                    <a href="/items/new/" class="bg-amherst-purple text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300">
                         <i class="fas fa-question-circle"></i>
                         Report Lost Item
                     </a>
-                    <a href="/items/" class="bg-amherst-gold hover:bg-amber-200 text-amherst-purple px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300 hover:shadow-lg animate-pulse animate-infinite animate-duration-[2000ms] animate-delay-200">
+                    <a href="/items/" class="bg-amherst-gold text-amherst-purple px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all duration-300">
                         <i class="fas fa-check-circle"></i>
                         Browse Found Items
                     </a>
@@ -191,7 +191,7 @@
             </div>
             
             <div class="md:w-1/2 flex justify-center">
-                <img src="{% static 'campus-illustration.png' %}" alt="Amherst Campus" class="max-w-md w-full animate-float">
+                <img src="{% static 'images/campus-illustration.png' %}" alt="Amherst Campus" class="max-w-md w-full animate-float">
             </div>
         </div>
     </section>
@@ -201,16 +201,16 @@
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                 <div class="p-6">
-                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="1248">0</h3>
+                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ items_reunited }}">{{ items_reunited }}</h3>
                     <p class="text-lg text-amherst-purple font-semibold">Items Reunited</p>
                 </div>
                 <div class="p-6 relative">
-                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="97">0</h3>
+                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ success_rate }}">{{ success_rate }}</h3>
                     <p class="text-lg text-amherst-purple font-semibold">Success Rate</p>
                     <span class="absolute top-8 right-16 text-2xl text-amherst-purple">%</span>
                 </div>
                 <div class="p-6">
-                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="24">0</h3>
+                    <h3 class="text-5xl font-serif font-bold text-amherst-purple mb-2" data-count="{{ avg_response_time }}">{{ avg_response_time }}</h3>
                     <p class="text-lg text-amherst-purple font-semibold">Hour Response</p>
                 </div>
             </div>
@@ -231,7 +231,7 @@
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
                 <div>
-                    <img src="{% static 'amherst-logo-white.png' %}" alt="Amherst Logo" class="h-12 mb-4">
+                    <img src="{% static 'images/amherst-logo.png' %}" alt="Amherst Logo" class="h-20 w-20 mb-4">
                     <h3 class="text-xl font-serif font-bold mb-2">Amherst College <span class="text-amherst-gold">Lost & Found</span></h3>
                     <address class="not-italic flex flex-col gap-1">
                         <span class="flex items-center gap-2">
