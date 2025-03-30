@@ -52,25 +52,6 @@ def item_list(request):
     }
     return render(request, 'items/item_list.html', context)
 
-# New view for item submission
-"""
-def item_create(request):
-    if request.method == 'POST':
-        form = ItemForm(request.POST, request.FILES)
-        if form.is_valid():
-            item = form.save(commit=False)
-            # Only assign reported_by if user is authenticated
-            if request.user.is_authenticated:
-                item.reported_by = request.user
-            # If user is not authenticated, reported_by remains None
-            item.save()
-            return redirect('item_list')
-    else:
-        form = ItemForm()
-
-    context = {'form': form}
-    return render(request, 'items/item_form.html', context)
-"""
 
 def home(request):
     return render(request, 'base.html')
@@ -144,14 +125,16 @@ def recognize_image(image):
 
     return result
 
-
 def item_create(request):
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES)
         if form.is_valid():
             item = form.save(commit=False)
-            item.reported_by = request.user
-            
+            # Only assign reported_by if user is authenticated
+            if request.user.is_authenticated:
+                item.reported_by = request.user
+            # If user is not authenticated, reported_by remains None
+
             # Perform image recognition
             if item.image:
                 image_path = item.image.path
