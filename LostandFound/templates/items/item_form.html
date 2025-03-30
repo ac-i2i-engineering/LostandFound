@@ -4,7 +4,7 @@
 
 {% block content %}
 <section class="container mx-auto px-6 py-8">
-    <h1 class="text-3xl font-serif font-bold text-amherst-purple mb-6">Submit Lost or Found Item</h1>
+    <h1 class="text-3xl font-serif font-bold mb-6">Submit Lost or Found Item</h1>
     <form method="post" enctype="multipart/form-data" class="space-y-4">
         {% csrf_token %}
         {{ form.as_p }}
