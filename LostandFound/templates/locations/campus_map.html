@@ -1,0 +1,39 @@
+<!-- templates/locations/campus_map.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Amherst Lost & Found Campus Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        #map { height: 600px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<h2>Amherst Lost & Found Campus Map</h2>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map').setView([42.3709, -72.5160], 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    {% for loc in locations %}
+        L.marker([{{ loc.latitude }}, {{ loc.longitude }}])
+            .addTo(map)
+            .bindPopup("<strong>{{ loc.name }}</strong>");
+    {% endfor %}
+</script>
+
+</body>
+</html>

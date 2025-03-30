@@ -1,0 +1,31 @@
+<!-- templates/items/profile.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ user.username }}'s Profile</title>
+</head>
+<body>
+
+    <h2>Welcome, {{ user.username }}</h2>
+
+    <h3>Your Reported Items</h3>
+
+    {% if user_items %}
+        <ul>
+            {% for item in user_items %}
+                <li>
+                    {{ item.name }} ({{ item.status }}) - 
+                    <a href="{% url 'item_edit' item.pk %}">Edit</a> | 
+                    <a href="{% url 'item_delete' item.pk %}">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't reported any items yet.</p>
+    {% endif %}
+
+    <p><a href="{% url 'item_create' %}">Report a new item</a></p>
+    <p><a href="{% url 'item_list' %}">Back to Items List</a></p>
+
+</body>
+</html>
