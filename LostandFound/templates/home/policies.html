@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Policies | Amherst Lost & Found{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-6 py-12">
+    <div class="bg-white shadow-lg rounded-lg p-8">
+        <h1 class="text-4xl font-serif font-bold text-amherst-purple mb-6">Policies</h1>
+        <p class="text-lg text-amherst-dark leading-relaxed">
+            By using this service, you agree to the following policies:
+        </p>
+        <ul class="list-disc pl-6 mt-4 space-y-4 text-lg text-amherst-dark leading-relaxed">
+            <li>All submissions must be truthful and accurate.</li>
+            <li>Items must be returned to their rightful owners.</li>
+            <li>Misuse of this service may result in disciplinary action.</li>
+        </ul>
+        <div class="mt-8">
+            <a href="/" class="bg-amherst-gold hover:bg-amber-200 text-amherst-purple px-6 py-3 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

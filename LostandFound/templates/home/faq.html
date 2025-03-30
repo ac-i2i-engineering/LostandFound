@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ | Amherst Lost & Found{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-6 py-12">
+    <div class="bg-white shadow-lg rounded-lg p-8">
+        <h1 class="text-4xl font-serif font-bold text-amherst-purple mb-6">Frequently Asked Questions</h1>
+        <ul class="space-y-6">
+            <li>
+                <h2 class="text-2xl font-bold text-amherst-purple">How do I report a lost item?</h2>
+                <p class="text-lg text-amherst-dark leading-relaxed">
+                    Click on the "Report Lost Item" button on the homepage and fill out the form with the details of your lost item.
+                </p>
+            </li>
+            <li>
+                <h2 class="text-2xl font-bold text-amherst-purple">How do I report a found item?</h2>
+                <p class="text-lg text-amherst-dark leading-relaxed">
+                    Click on the "Submit Item" button and provide the details of the item you found.
+                </p>
+            </li>
+            <li>
+                <h2 class="text-2xl font-bold text-amherst-purple">Who can use this service?</h2>
+                <p class="text-lg text-amherst-dark leading-relaxed">
+                    This service is available to all members of the Amherst College community.
+                </p>
+            </li>
+        </ul>
+        <div class="mt-8">
+            <a href="/" class="bg-amherst-gold hover:bg-amber-200 text-amherst-purple px-6 py-3 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
