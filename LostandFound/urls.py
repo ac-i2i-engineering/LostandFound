@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('items/', include('items.urls')),
     path('', home, name='home'),  # Now home is defined
+    path('locations/', include('locations.urls')),
 ]
 
 # Correct way to serve media files in DEBUG mode

@@ -1,11 +1,14 @@
 # items/views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Item
 from locations.models import Location
 from .forms import ItemForm  # Import your new form!
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
+from django.contrib.auth.decorators import login_required
+
+
 
 def item_list(request):
     items = Item.objects.all().select_related('location')
@@ -49,16 +52,16 @@ def item_create(request):
 def home(request):
     return render(request, 'base.html')
 
+# In items/views.py
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('item_list')
+            form.save()
+            return redirect('login')
     else:
         form = RegisterForm()
-
+    
     return render(request, 'items/register.html', {'form': form})
 
 def user_login(request):
@@ -77,3 +80,43 @@ def user_logout(request):
     logout(request)
     return redirect('item_list')
 
+def item_create(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.reported_by = request.user
+            item.save()
+            return redirect('item_list')
+    else:
+        form = ItemForm()
+
+    context = {'form': form}
+    return render(request, 'items/item_form.html', context)
+
+@login_required
+def item_edit(request, pk):
+    item = get_object_or_404(Item, pk=pk, reported_by=request.user)
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('item_list')
+    else:
+        form = ItemForm(instance=item)
+
+    return render(request, 'items/item_form.html', {'form': form, 'item': item})
+
+@login_required
+def item_delete(request, pk):
+    item = get_object_or_404(Item, pk=pk, reported_by=request.user)
+    if request.method == 'POST':
+        item.delete()
+        return redirect('item_list')
+
+    return render(request, 'items/item_confirm_delete.html', {'item': item})
+
+@login_required
+def user_profile(request):
+    user_items = Item.objects.filter(reported_by=request.user)
+    return render(request, 'items/profile.html', {'user_items': user_items})

@@ -16,7 +16,6 @@
     {% endif %}
 
     <h1 class="text-3xl font-serif font-bold text-amherst-purple mt-8">Lost & Found Items</h1>
-
     <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 bg-white/80 z-50 flex items-center justify-center hidden">
         <p class="text-xl font-semibold text-amherst-dark">Loading, please wait...</p>
@@ -46,22 +45,34 @@
     <hr class="my-8">
 
     <!-- Items List -->
+    {% for item in items %}
     <div>
-        {% for item in items %}
-            <div class="border p-4 rounded mb-4">
-                <h3 class="text-xl font-bold">{{ item.name }} ({{ item.status }})</h3>
-                <p><strong>Description:</strong> {{ item.description }}</p>
-                <p><strong>Location:</strong> {{ item.location.name }}</p>
-                <p><strong>Date Reported:</strong> {{ item.date_reported }}</p>
-                {% if item.image %}
-                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-48 mt-4">
-                {% endif %}
-            </div>
-        {% empty %}
-            <p class="text-lg text-amherst-dark">No items available yet.</p>
-        {% endfor %}
+        <h3>{{ item.name }} ({{ item.status }})</h3>
+        <p>{{ item.description }}</p>
+        <p><strong>Location:</strong> {{ item.location.name }}</p>
+        <p><strong>Date:</strong> {{ item.date_reported }}</p>
+        
+        {% if item.reported_by %}
+            <p><strong>Submitted by:</strong> {{ item.reported_by.username }}</p>
+        {% else %}
+            <p><strong>Submitted by:</strong> Anonymous</p>
+        {% endif %}
+
+        {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" width="200">
+        {% endif %}
+
+        {% if user == item.reported_by %}
+            <p>
+                <a href="{% url 'item_edit' item.pk %}">Edit</a> |
+                <a href="{% url 'item_delete' item.pk %}">Delete</a>
+            </p>
+        {% endif %}
     </div>
-</section>
+    <hr>
+{% empty %}
+    <p>No items available yet.</p>
+{% endfor %}
 
 <script>
     // Function to show the loading screen
