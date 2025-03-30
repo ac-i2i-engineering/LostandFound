@@ -52,9 +52,13 @@ def item_list(request):
     }
     return render(request, 'items/item_list.html', context)
 
-
 def home(request):
-    return render(request, 'base.html')
+    context = {
+        'items_reunited': 55,
+        'success_rate': 97,  # Rounded to 2 decimal places
+        'avg_response_time': 24,  # Placeholder for average response time
+    }
+    return render(request, 'base.html', context)
 
 # In items/views.py
 def register(request):
