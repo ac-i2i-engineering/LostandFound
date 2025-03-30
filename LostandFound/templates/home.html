@@ -4,8 +4,15 @@
     <title>Amherst Lost & Found</title>
 </head>
 <body>
+    {% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }}! | <a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
+    <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+
     <h1>Welcome to Amherst Lost & Found</h1>
     <a href="{% url 'item_list' %}">See Lost & Found Items</a><br>
     <a href="{% url 'item_create' %}">Report Lost/Found Item</a>
 </body>
 </html>
+
