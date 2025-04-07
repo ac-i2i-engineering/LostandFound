@@ -153,6 +153,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="/locations/map/" class="text-white hover:text-amherst-gold transition-colors duration-200 flex items-center gap-2">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Map</span>
+                        </a>
+                    </li>
+                    <li>
                         {% if user.is_authenticated %}
                             <a href="{% url 'logout' %}" class="ml-4 bg-amherst-gold text-amherst-purple px-5 py-2 rounded-full font-semibold hover:shadow-md transition-all duration-200 flex items-center gap-2">
                                 <i class="fas fa-user"></i>

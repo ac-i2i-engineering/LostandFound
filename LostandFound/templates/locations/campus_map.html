@@ -1,39 +1,129 @@
 <!-- templates/locations/campus_map.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Amherst Lost & Found Campus Map</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+{% extends 'base.html' %}
+{% load static %}
 
-    <style>
-        #map { height: 600px; width: 100%; }
-    </style>
-</head>
-<body>
+{% block title %}Campus Map | Amherst Lost & Found{% endblock %}
 
-<h2>Amherst Lost & Found Campus Map</h2>
+{% block content %}
+<section class="container mx-auto px-6 py-12">
+    <div class="bg-white shadow-lg rounded-lg p-8">
+        <h1 class="text-4xl font-serif font-bold text-amherst-purple mb-6">Campus Map</h1>
+        <p class="text-lg text-amherst-dark leading-relaxed mb-6">
+            This interactive map shows all the designated lost and found collection points on the Amherst College campus.
+        </p>
+        
+        <div id="map" class="w-full h-[600px] rounded-lg shadow-md mb-6"></div>
+        
+        <!-- Location List -->
+        <div class="mt-10">
+            <h2 class="text-2xl font-serif font-bold text-amherst-purple mb-4">All Collection Points</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for loc in locations %}
+                <div class="bg-gray-50 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300 cursor-pointer location-card" data-location-id="{{ loc.id }}">
+                    {% if loc.image %}
+                    <img src="{{ loc.image.url }}" alt="{{ loc.name }}" class="w-full h-40 object-cover rounded mb-3">
+                    {% else %}
+                    <div class="w-full h-40 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                        <i class="fas fa-map-marker-alt text-4xl text-amherst-purple"></i>
+                    </div>
+                    {% endif %}
+                    <h3 class="text-xl font-bold text-amherst-purple">{{ loc.name }}</h3>
+                    {% if loc.description %}
+                    <p class="text-amherst-dark mt-2">{{ loc.description }}</p>
+                    {% endif %}
+                    <p class="text-amherst-purple mt-2 text-sm font-medium">
+                        <i class="fas fa-map-pin mr-1"></i> Click to view on map
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
 
-<div id="map"></div>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<style>
+/* Custom styles for the map popups */
+.leaflet-popup-content-wrapper {
+    background-color: white; 
+    color: white;
+    border-radius: 8px;
+}
+
+.leaflet-popup-tip {
+    background-color: white; 
+}
+
+.map-popup h3 {
+    color:#4B2E83; 
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.map-popup p {
+    color: #4B2E83;
+    margin-bottom: 5px;
+}
+
+.map-popup strong {
+    color: #4B2E83; 
+}
+</style>
+
 <script>
-    var map = L.map('map').setView([42.3709, -72.5160], 16);
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('map').setView([42.3709, -72.5160], 16);
+        var markers = {}; // Store markers by location ID
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    {% for loc in locations %}
-        L.marker([{{ loc.latitude }}, {{ loc.longitude }}])
-            .addTo(map)
-            .bindPopup("<strong>{{ loc.name }}</strong>");
-    {% endfor %}
+        {% for loc in locations %}
+            var popupContent = '<div class="map-popup">' +
+                '<h3 class="font-bold text-lg">{{ loc.name }}</h3>';
+            
+            {% if loc.image %}
+                popupContent += '<img src="{{ loc.image.url }}" alt="{{ loc.name }}" class="w-full h-32 object-cover my-2 rounded">';
+            {% endif %}
+            
+            {% if loc.description %}
+                popupContent += '<p>{{ loc.description|escapejs }}</p>';
+            {% endif %}
+            
+            popupContent += '<p class="mt-2"><strong>Lost & Found Collection Point</strong></p>' +
+                '</div>';
+                
+            var marker = L.marker([{{ loc.latitude }}, {{ loc.longitude }}])
+                .addTo(map)
+                .bindPopup(popupContent);
+            
+            // Store the marker with the location ID
+            markers[{{ loc.id }}] = marker;
+        {% endfor %}
+
+        // Make location grid items clickable
+        document.querySelectorAll('.location-card').forEach(function(card) {
+            card.addEventListener('click', function() {
+                var locationId = this.getAttribute('data-location-id');
+                if (markers[locationId]) {
+                    // Center the map on this marker
+                    map.setView(markers[locationId].getLatLng(), 18);
+                    // Open the popup
+                    markers[locationId].openPopup();
+                    
+                    // Smooth scroll to the map
+                    document.getElementById('map').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
 </script>
-
-</body>
-</html>
+{% endblock %}
