@@ -13,27 +13,12 @@ class Item(models.Model):
     date_lost_or_found = models.DateTimeField()
     location = models.ForeignKey('locations.Location', on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Lost')
-    reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    image_recognition_result = models.TextField(blank=True, null=True)
-
-    # --- add these for safe deletes + audit ---
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
-    history = HistoricalRecords()
-
-    def soft_delete(self, user=None):
-        """Mark as deleted without removing from DB."""
-        if not self.is_deleted:
-            self.is_deleted = True
-            self.deleted_at = timezone.now()
-            self.save()
-
-    def restore(self):
-        if self.is_deleted:
-            self.is_deleted = False
-            self.deleted_at = None
-            self.save()
+    reported_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.name} - {self.status}"
