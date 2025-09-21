@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 
+APPEND_SLASH = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +44,9 @@ INSTALLED_APPS = [
     'accounts',
     'items',
     'locations',
+    "django_filters",          # for filtering
+    "simple_history",          # for audits
+    "staff",                   # your new dashboard app
 ]
 
 MIDDLEWARE = [
@@ -53,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = 'LostandFound.urls'

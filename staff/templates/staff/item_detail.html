@@ -1,0 +1,27 @@
+{% extends "staff/base.html" %}
+{% block title %}Item #{{ object.pk }} · Staff{% endblock %}
+{% block content %}
+<h2 class="text-xl font-semibold mb-4">Item #{{ object.pk }}</h2>
+<div class="bg-white border rounded p-4 space-y-2">
+  <div><b>Name:</b> {{ object.name }}</div>
+  <div><b>Description:</b> {{ object.description }}</div>
+  <div><b>Status:</b> {{ object.status }}</div>
+  <div><b>Location:</b> {{ object.location|default:"-" }}</div>
+  <div><b>Reported By:</b> {{ object.reported_by|default:"-" }}</div>
+  <div><b>Reported:</b> {{ object.date_reported|date:"Y-m-d H:i" }}</div>
+  <div><b>Lost/Found Date:</b> {{ object.date_lost_or_found|date:"Y-m-d H:i" }}</div>
+  <div><b>Deleted:</b> {{ object.is_deleted }}
+       {% if object.deleted_at %} ({{ object.deleted_at|date:"Y-m-d H:i" }}){% endif %}</div>
+  <div class="flex gap-2 mt-2">
+    {% if not object.is_deleted %}
+    <form method="post" action="{% url 'staff:item_delete' object.pk %}">{% csrf_token %}
+      <button class="px-3 py-2 border rounded" type="submit">Soft delete</button>
+    </form>
+    {% else %}
+    <form method="post" action="{% url 'staff:item_restore' object.pk %}">{% csrf_token %}
+      <button class="px-3 py-2 border rounded" type="submit">Restore</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

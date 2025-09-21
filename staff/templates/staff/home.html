@@ -1,0 +1,22 @@
+{% extends "staff/base.html" %}
+{% block title %}Overview · Staff{% endblock %}
+{% block content %}
+<h2 class="text-xl font-semibold mb-4">Overview</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="p-4 bg-white rounded border">Total: {{ total_items }}</div>
+  <div class="p-4 bg-white rounded border">Active: {{ active_items }}</div>
+  <div class="p-4 bg-white rounded border">Deleted: {{ deleted_items }}</div>
+</div>
+<h3 class="font-medium mb-2">Recent Items</h3>
+<div class="bg-white border rounded">
+  <ul>
+    {% for i in recent %}
+      <li class="p-3 border-b last:border-b-0">
+        <a class="hover:underline" href="{% url 'staff:item_detail' i.pk %}">#{{ i.pk }} · {{ i.name }}</a>
+      </li>
+    {% empty %}
+      <li class="p-3">No items yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
