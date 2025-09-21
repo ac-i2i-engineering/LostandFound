@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Staff Dashboard{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+</head>
+<body class="min-h-screen bg-gray-50">
+  <div class="flex">
+    <aside class="w-64 bg-white border-r min-h-screen p-4">
+      <h1 class="text-lg font-semibold mb-4">Staff</h1>
+      <nav class="space-y-2">
+        <a class="block hover:underline" href="{% url 'staff:home' %}">Overview</a>
+        <a class="block hover:underline" href="{% url 'staff:items' %}">Items</a>
+        <a class="block hover:underline" href="{% url 'admin:index' %}">Django Admin</a>
+      </nav>
+    </aside>
+    <main class="flex-1 p-6">
+      {% if messages %}
+        <div class="space-y-2 mb-4">
+          {% for m in messages %}
+            <div class="p-3 border rounded bg-white">{{ m }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

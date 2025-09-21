@@ -1,0 +1,126 @@
+{% extends "staff/base.html" %}
+{% block title %}Items · Staff{% endblock %}
+
+{% block content %}
+<h2 class="text-xl font-semibold mb-4">Items</h2>
+
+<!-- Filter bar -->
+<form method="get" class="mb-4 grid grid-cols-1 gap-2 md:grid-cols-6">
+  <!-- Keyword -->
+  <div class="md:col-span-2">
+    <label class="block text-sm mb-1" for="id_q">Search</label>
+    <input id="id_q" type="text" name="q" value="{{ request.GET.q }}"
+           placeholder="Name / description / AI result"
+           class="border rounded p-2 w-full bg-white">
+  </div>
+
+  <!-- Status -->
+  <div>
+    <label class="block text-sm mb-1">Status</label>
+    {{ filter.form.status }}
+  </div>
+
+  <!-- Location -->
+  <div>
+    <label class="block text-sm mb-1">Location</label>
+    {{ filter.form.location }}
+  </div>
+
+  <!-- Date range -->
+  <div class="md:col-span-2">
+    <label class="block text-sm mb-1">Lost/Found between</label>
+    <div class="flex gap-2">
+      {{ filter.form.date_lost_or_found.after }}
+      {{ filter.form.date_lost_or_found.before }}
+    </div>
+  </div>
+
+  <!-- Show deleted + buttons -->
+  <div class="md:col-span-6 flex items-end gap-2">
+    <label class="flex items-center gap-2 p-2 bg-white border rounded">
+      {{ filter.form.show_deleted }} Show deleted
+    </label>
+    <button class="px-3 py-2 border rounded bg-white" type="submit">Filter</button>
+    <a class="px-3 py-2 border rounded bg-white" href="{% url 'staff:items' %}">Reset</a>
+  </div>
+</form>
+
+<!-- Bulk action + table -->
+<form method="post" action="{% url 'staff:items_bulk' %}" class="bg-white border rounded">
+  {% csrf_token %}
+  <div class="p-2 border-b flex gap-2">
+    <select name="action" class="border rounded p-2">
+      <option value="">Bulk action…</option>
+      <option value="delete">Soft delete</option>
+      <option value="restore">Restore</option>
+    </select>
+    <button type="submit" class="px-3 py-2 border rounded">Apply</button>
+  </div>
+
+  <table class="w-full text-left">
+    <thead>
+      <tr class="border-b">
+        <th class="p-2">
+          <input type="checkbox" onclick="document.querySelectorAll('.rowcb').forEach(cb=>cb.checked=this.checked)">
+        </th>
+        <th class="p-2">ID</th>
+        <th class="p-2">Name</th>
+        <th class="p-2">Status</th>
+        <th class="p-2">Location</th>
+        <th class="p-2">Reported By</th>
+        <th class="p-2">Deleted?</th>
+        <th class="p-2">Reported</th>
+        <th class="p-2">Lost/Found Date</th>
+        <th class="p-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in object_list %}
+      <tr class="border-b">
+        <td class="p-2"><input class="rowcb" type="checkbox" name="ids" value="{{ obj.id }}"></td>
+        <td class="p-2">#{{ obj.id }}</td>
+        <td class="p-2">
+          <a class="hover:underline" href="{% url 'staff:item_detail' obj.pk %}">{{ obj.name }}</a>
+        </td>
+        <td class="p-2">{{ obj.status }}</td>
+        <td class="p-2">{{ obj.location|default:"-" }}</td>
+        <td class="p-2">{{ obj.reported_by|default:"-" }}</td>
+        <td class="p-2">{{ obj.is_deleted }}</td>
+        <td class="p-2">{{ obj.date_reported|date:"Y-m-d H:i" }}</td>
+        <td class="p-2">{{ obj.date_lost_or_found|date:"Y-m-d H:i" }}</td>
+        <td class="p-2">
+          {% if not obj.is_deleted %}
+          <form method="post" action="{% url 'staff:item_delete' obj.pk %}">{% csrf_token %}
+            <button class="px-2 py-1 border rounded" type="submit">Soft delete</button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'staff:item_restore' obj.pk %}">{% csrf_token %}
+            <button class="px-2 py-1 border rounded" type="submit">Restore</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td class="p-4" colspan="10">No items found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+  <div class="mt-4 flex gap-2">
+    {% with query=request.GET.urlencode %}
+      {% if page_obj.has_previous %}
+        <a class="px-3 py-2 border rounded bg-white"
+           href="?page={{ page_obj.previous_page_number }}{% if query %}&{{ query }}{% endif %}">Prev</a>
+      {% endif %}
+      <span class="px-3 py-2 border rounded bg-white">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a class="px-3 py-2 border rounded bg-white"
+           href="?page={{ page_obj.next_page_number }}{% if query %}&{{ query }}{% endif %}">Next</a>
+      {% endif %}
+    {% endwith %}
+  </div>
+{% endif %}
+{% endblock %}
