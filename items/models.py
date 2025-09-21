@@ -17,7 +17,6 @@ class Item(models.Model):
         null=True, 
         blank=True
     )
-    image_recognition_result = models.TextField(blank=True, null=True)  # New field
 
     def __str__(self):
         return f"{self.name} - {self.status}"
