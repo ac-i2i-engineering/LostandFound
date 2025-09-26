@@ -25,6 +25,9 @@ def item_list(request):
     keyword = request.GET.get('keyword', '')
     location = request.GET.get('location')
     status = request.GET.get('status')
+    item_type = request.GET.get('item_type', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
 
     # Apply filters
     if keyword:
@@ -40,6 +43,41 @@ def item_list(request):
         items = items.filter(location__id=location)
     if status:
         items = items.filter(status=status)
+    if item_type:
+        # If model/table has an `item_type` field, filter that column.
+        # Otherwise, treat the item_type input as a semantic category and
+        # fallback to searching name and description to avoid returning everything.
+        try:
+            field_names = [f.name for f in Item._meta.get_fields()]
+            if 'item_type' in field_names:
+                items = items.filter(item_type__icontains=item_type)
+            else:
+                items = items.filter(
+                    Q(name__icontains=item_type) |
+                    Q(description__icontains=item_type)
+                )
+        except Exception:
+            # If any error occurs (schema/inspection), fallback to name/description search
+            items = items.filter(
+                Q(name__icontains=item_type) |
+                Q(description__icontains=item_type)
+            )
+
+    # Filter by date range (date_reported)
+    from django.utils.dateparse import parse_datetime, parse_date
+    try:
+        if date_from:
+            # accept date or datetime strings; parse_date for date-only
+            parsed = parse_date(date_from) or parse_datetime(date_from)
+            if parsed:
+                items = items.filter(date_reported__date__gte=parsed)
+        if date_to:
+            parsed2 = parse_date(date_to) or parse_datetime(date_to)
+            if parsed2:
+                items = items.filter(date_reported__date__lte=parsed2)
+    except Exception:
+        # If parsing fails, ignore date filters
+        pass
 
     context = {
         'items': items,
@@ -47,6 +85,9 @@ def item_list(request):
         'keyword': keyword,
         'selected_location': location,
         'selected_status': status,
+        'selected_item_type': item_type,
+        'date_from': date_from,
+        'date_to': date_to,
     }
     return render(request, 'items/item_list.html', context)
 
