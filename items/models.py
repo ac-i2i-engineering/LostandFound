@@ -19,13 +19,9 @@ class Item(models.Model):
         null=True, 
         blank=True
     )
-    
-    # Add the missing fields
+
     is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-    image_recognition_result = models.TextField(blank=True, null=True)
-    
-    # Add the history tracking
+    deleted_at = models.DateTimeField(blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
