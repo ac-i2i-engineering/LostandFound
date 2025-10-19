@@ -25,11 +25,38 @@
     }
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom styles for smooth transitions */
+    .sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar-overlay {
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+  </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+  <!-- Mobile Header with Menu Button -->
+  <header class="lg:hidden bg-white shadow-sm border-b border-gray-200 p-4">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amherst-purple rounded-lg flex items-center justify-center">
+          <i class="fas fa-user-shield text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-amherst-purple">Staff Dashboard</h1>
+          <p class="text-sm text-gray-500">{{ user.username }}</p>
+        </div>
+      </div>
+      <button id="menuToggle" class="p-2 rounded-lg text-amherst-purple hover:bg-gray-100">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+  </header>
+
   <div class="flex">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white shadow-lg border-r border-gray-200 min-h-screen">
+    <aside id="sidebar" class="sidebar fixed lg:relative w-64 bg-white shadow-lg border-r border-gray-200 min-h-screen transform -translate-x-full lg:translate-x-0 z-50">
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-amherst-purple rounded-lg flex items-center justify-center">
@@ -71,12 +98,21 @@
       </nav>
     </aside>
 
+    <!-- Overlay for mobile when sidebar is open -->
+    <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
+
     <!-- Main Content -->
-    <main class="flex-1 p-8">
-      <!-- Header -->
-      <div class="mb-8">
+    <main class="flex-1 p-4 lg:p-8 w-full">
+      <!-- Header for desktop -->
+      <div class="hidden lg:block mb-8">
         <h2 class="text-3xl font-bold text-amherst-purple mb-2">{% block page_title %}Dashboard{% endblock %}</h2>
         <p class="text-gray-600">{% block page_description %}Manage lost and found items{% endblock %}</p>
+      </div>
+
+      <!-- Mobile page title (shown only on mobile) -->
+      <div class="lg:hidden mb-6">
+        <h2 class="text-2xl font-bold text-amherst-purple mb-1">{% block page_title_mobile %}Dashboard{% endblock %}</h2>
+        <p class="text-gray-600 text-sm">{% block page_description_mobile %}Manage lost and found items{% endblock %}</p>
       </div>
 
       <!-- Messages -->
@@ -97,5 +133,45 @@
       {% block content %}{% endblock %}
     </main>
   </div>
+
+  <script>
+    // Toggle sidebar on mobile
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    if (menuToggle && sidebar && sidebarOverlay) {
+      menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+      });
+      
+      sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+      });
+      
+      // Close sidebar when clicking on a link (mobile)
+      const sidebarLinks = document.querySelectorAll('#sidebar a');
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 1024) {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+          }
+        });
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024) {
+          sidebar.classList.remove('-translate-x-full');
+          sidebarOverlay.classList.add('hidden');
+        } else {
+          sidebar.classList.add('-translate-x-full');
+        }
+      });
+    }
+  </script>
 </body>
 </html>

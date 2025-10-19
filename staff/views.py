@@ -46,12 +46,6 @@ class DashboardHome(TemplateView):
         ctx["items_this_week"] = Item.objects.filter(date_reported__date__gte=week_ago).count()
         ctx["items_this_month"] = Item.objects.filter(date_reported__date__gte=month_ago).count()
         
-        # Recent items with AI recognition
-        ctx["items_with_ai"] = Item.objects.filter(
-            image_recognition_result__isnull=False,
-            is_deleted=False
-        ).exclude(image_recognition_result='').count()
-        
         # User activity
         ctx["total_reporters"] = Item.objects.filter(reported_by__isnull=False).values('reported_by').distinct().count()
         ctx["anonymous_reports"] = Item.objects.filter(reported_by__isnull=True).count()

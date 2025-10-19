@@ -4,81 +4,168 @@
 {% block page_title %}Items Management{% endblock %}
 {% block page_description %}Search, filter, and manage all lost and found items{% endblock %}
 
+{% block page_title_mobile %}Items Management{% endblock %}
+{% block page_description_mobile %}Search, filter, and manage items{% endblock %}
+
 {% block content %}
 <!-- Filter Section -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-  <h3 class="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
-  <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+<div class="bg-white rounded-lg lg:rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mb-4 lg:mb-6">
+  <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Filters</h3>
+  <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4">
     <!-- Search -->
-    <div class="md:col-span-2">
-      <label class="block text-sm font-medium text-gray-700 mb-2" for="id_q">Search</label>
+    <div class="md:col-span-2 lg:col-span-2">
+      <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1 lg:mb-2" for="id_q">Search</label>
       <input id="id_q" type="text" name="q" value="{{ request.GET.q }}"
              placeholder="Name, description, or AI result..."
-             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amherst-purple focus:border-transparent">
+             class="w-full px-3 lg:px-4 py-2 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-amherst-purple focus:border-transparent">
     </div>
 
     <!-- Status -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+      <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Status</label>
       {{ filter.form.status }}
     </div>
 
     <!-- Location -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+      <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Location</label>
       {{ filter.form.location }}
     </div>
 
     <!-- Date Range -->
-    <div class="md:col-span-2">
-      <label class="block text-sm font-medium text-gray-700 mb-2">Lost/Found Between</label>
-      <div class="flex gap-2">
+    <div class="md:col-span-2 lg:col-span-2">
+      <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1 lg:mb-2">Lost/Found Between</label>
+      <div class="flex flex-col sm:flex-row gap-2">
         {{ filter.form.date_lost_or_found.after }}
         {{ filter.form.date_lost_or_found.before }}
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="md:col-span-6 flex items-end gap-3 pt-4 border-t border-gray-200">
-      <label class="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+    <div class="md:col-span-2 lg:col-span-6 flex flex-col sm:flex-row sm:items-end gap-3 pt-3 lg:pt-4 border-t border-gray-200">
+      <label class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-sm">
         {{ filter.form.show_deleted }}
-        <span class="text-sm font-medium text-gray-700">Show deleted items</span>
+        <span class="text-xs lg:text-sm font-medium text-gray-700">Show deleted items</span>
       </label>
-      <button type="submit" class="px-6 py-2 bg-amherst-purple text-white rounded-lg hover:bg-amherst-darkpurple transition-colors flex items-center gap-2">
-        <i class="fas fa-search"></i>
-        Filter
-      </button>
-      <a href="{% url 'staff:items' %}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
-        <i class="fas fa-undo"></i>
-        Reset
-      </a>
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 px-4 py-2 bg-amherst-purple text-white rounded-lg hover:bg-amherst-darkpurple transition-colors flex items-center justify-center gap-2 text-sm lg:text-base">
+          <i class="fas fa-search"></i>
+          <span class="hidden sm:inline">Filter</span>
+        </button>
+        <a href="{% url 'staff:items' %}" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm lg:text-base">
+          <i class="fas fa-undo"></i>
+          <span class="hidden sm:inline">Reset</span>
+        </a>
+      </div>
     </div>
   </form>
 </div>
 
 <!-- Bulk Actions & Table -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="bg-white rounded-lg lg:rounded-xl shadow-sm border border-gray-200 overflow-hidden">
   <form method="post" action="{% url 'staff:items_bulk' %}">
     {% csrf_token %}
     
     <!-- Bulk Actions Bar -->
-    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-      <div class="flex items-center gap-4">
-        <select name="action" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amherst-purple focus:border-transparent">
-          <option value="">Select bulk action...</option>
-          <option value="delete">Soft delete selected</option>
-          <option value="restore">Restore selected</option>
-        </select>
-        <button type="submit" class="px-4 py-2 bg-amherst-purple text-white rounded-lg hover:bg-amherst-darkpurple transition-colors flex items-center gap-2">
-          <i class="fas fa-play"></i>
-          Apply
-        </button>
-        <span class="text-sm text-gray-600">{{ object_list|length }} item{{ object_list|length|pluralize }} found</span>
+    <div class="px-4 lg:px-6 py-3 lg:py-4 bg-gray-50 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div class="flex gap-2 flex-1">
+          <select name="action" class="flex-1 px-3 lg:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-amherst-purple focus:border-transparent">
+            <option value="">Select bulk action...</option>
+            <option value="delete">Soft delete selected</option>
+            <option value="restore">Restore selected</option>
+          </select>
+          <button type="submit" class="px-4 py-2 bg-amherst-purple text-white rounded-lg hover:bg-amherst-darkpurple transition-colors flex items-center gap-2 text-sm">
+            <i class="fas fa-play"></i>
+            <span class="hidden sm:inline">Apply</span>
+          </button>
+        </div>
+        <span class="text-xs lg:text-sm text-gray-600">{{ object_list|length }} item{{ object_list|length|pluralize }} found</span>
       </div>
     </div>
 
-    <!-- Table -->
-    <div class="overflow-x-auto">
+    <!-- Mobile Card View -->
+    <div class="block lg:hidden divide-y divide-gray-200">
+      {% for obj in object_list %}
+      <div class="p-4 hover:bg-gray-50 {% if obj.is_deleted %}bg-red-50{% endif %}">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" name="ids" value="{{ obj.id }}" class="rowcb rounded border-gray-300 text-amherst-purple focus:ring-amherst-purple">
+            <span class="text-sm font-medium text-gray-900">#{{ obj.id }}</span>
+          </div>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+            {% if obj.status == 'Lost' %}bg-red-100 text-red-800
+            {% elif obj.status == 'Found' %}bg-green-100 text-green-800
+            {% elif obj.status == 'Returned' %}bg-blue-100 text-blue-800
+            {% endif %}">
+            {{ obj.status }}
+          </span>
+        </div>
+        
+        <div class="mb-3">
+          <a href="{% url 'staff:item_detail' obj.pk %}" class="text-sm font-medium text-amherst-purple hover:text-amherst-darkpurple block mb-1">
+            {{ obj.name }}
+          </a>
+          {% if obj.description %}
+          <p class="text-sm text-gray-500 line-clamp-2">{{ obj.description }}</p>
+          {% endif %}
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
+          <div class="flex items-center gap-1">
+            <i class="fas fa-map-marker-alt text-gray-400"></i>
+            <span>{{ obj.location|default:"-" }}</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i class="fas fa-user text-gray-400"></i>
+            <span>{{ obj.reported_by|default:"-" }}</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i class="fas fa-calendar text-gray-400"></i>
+            <span>{{ obj.date_reported|date:"M d, Y" }}</span>
+          </div>
+          <div class="flex items-center gap-1">
+            {% if obj.is_deleted %}
+              <i class="fas fa-trash text-red-500"></i>
+              <span class="text-red-600">Deleted</span>
+            {% else %}
+              <i class="fas fa-check text-green-500"></i>
+              <span class="text-green-600">Active</span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="flex justify-end">
+          {% if not obj.is_deleted %}
+          <form method="post" action="{% url 'staff:item_delete' obj.pk %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">
+              <i class="fas fa-trash mr-1"></i> Delete
+            </button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'staff:item_restore' obj.pk %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors">
+              <i class="fas fa-undo mr-1"></i> Restore
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="px-6 py-12 text-center">
+        <div class="flex flex-col items-center">
+          <i class="fas fa-search text-gray-300 text-3xl lg:text-4xl mb-3 lg:mb-4"></i>
+          <p class="text-gray-500 text-base lg:text-lg">No items found</p>
+          <p class="text-gray-400 text-xs lg:text-sm">Try adjusting your search criteria</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="hidden lg:block overflow-x-auto">
       <table class="w-full">
         <thead class="bg-gray-50">
           <tr>
@@ -173,32 +260,44 @@
 
 <!-- Pagination -->
 {% if page_obj.has_other_pages %}
-<div class="mt-6 flex items-center justify-between">
-  <div class="flex items-center gap-2">
+<div class="mt-4 lg:mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <div class="flex items-center gap-2 justify-center sm:justify-start">
     {% with query=request.GET.urlencode %}
       {% if page_obj.has_previous %}
         <a href="?page={{ page_obj.previous_page_number }}{% if query %}&{{ query }}{% endif %}" 
-           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2">
-          <i class="fas fa-chevron-left"></i> Previous
+           class="px-3 lg:px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-chevron-left"></i> 
+          <span class="hidden sm:inline">Previous</span>
         </a>
       {% endif %}
       
-      <span class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700">
+      <span class="px-3 lg:px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm">
         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
       </span>
       
       {% if page_obj.has_next %}
         <a href="?page={{ page_obj.next_page_number }}{% if query %}&{{ query }}{% endif %}" 
-           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2">
-          Next <i class="fas fa-chevron-right"></i>
+           class="px-3 lg:px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm">
+          <span class="hidden sm:inline">Next</span>
+          <i class="fas fa-chevron-right"></i>
         </a>
       {% endif %}
     {% endwith %}
   </div>
   
-  <p class="text-sm text-gray-600">
+  <p class="text-xs lg:text-sm text-gray-600 text-center sm:text-right">
     Showing {{ page_obj.start_index }} - {{ page_obj.end_index }} of {{ page_obj.paginator.count }} items
   </p>
 </div>
 {% endif %}
+
+<style>
+  /* Custom styles for mobile card view */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
 {% endblock %}
