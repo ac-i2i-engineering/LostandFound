@@ -31,6 +31,8 @@ class Item(models.Model):
         """Soft delete the item"""
         self.is_deleted = True
         self.deleted_at = timezone.now()
+        if user is not None:
+            self._history_user = user
         self.save()
 
     def restore(self):
