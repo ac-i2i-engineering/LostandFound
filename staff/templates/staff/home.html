@@ -1,22 +1,325 @@
 {% extends "staff/base.html" %}
-{% block title %}Overview · Staff{% endblock %}
+
+{% block title %}Overview · Staff Dashboard{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block page_description %}Monitor lost and found items activity{% endblock %}
+
 {% block content %}
-<h2 class="text-xl font-semibold mb-4">Overview</h2>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-  <div class="p-4 bg-white rounded border">Total: {{ total_items }}</div>
-  <div class="p-4 bg-white rounded border">Active: {{ active_items }}</div>
-  <div class="p-4 bg-white rounded border">Deleted: {{ deleted_items }}</div>
+<!-- Stats Cards Row 1 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 hover:shadow-md transition-shadow duration-200 stat-card mobile-tap">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Total Items</p>
+        <p class="text-2xl lg:text-3xl font-bold text-amherst-purple">{{ total_items }}</p>
+      </div>
+      <div class="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+        <i class="fas fa-archive text-blue-600 text-lg lg:text-xl"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 hover:shadow-md transition-shadow duration-200 stat-card mobile-tap">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Active Items</p>
+        <p class="text-2xl lg:text-3xl font-bold text-green-600">{{ active_items }}</p>
+      </div>
+      <div class="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+        <i class="fas fa-check-circle text-green-600 text-lg lg:text-xl"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 hover:shadow-md transition-shadow duration-200 stat-card mobile-tap">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">This Week</p>
+        <p class="text-2xl lg:text-3xl font-bold text-amherst-purple">{{ items_this_week }}</p>
+      </div>
+      <div class="w-10 h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+        <i class="fas fa-calendar-week text-amherst-purple text-lg lg:text-xl"></i>
+      </div>
+    </div>
+  </div>
 </div>
-<h3 class="font-medium mb-2">Recent Items</h3>
-<div class="bg-white border rounded">
-  <ul>
-    {% for i in recent %}
-      <li class="p-3 border-b last:border-b-0">
-        <a class="hover:underline" href="{% url 'staff:item_detail' i.pk %}">#{{ i.pk }} · {{ i.name }}</a>
-      </li>
+
+<!-- Status Breakdown -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mobile-tap">
+    <div class="flex items-center justify-between mb-3 lg:mb-4">
+      <h3 class="text-base lg:text-lg font-semibold text-gray-900">Lost Items</h3>
+      <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs lg:text-sm font-medium">{{ lost_items }}</span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-full bg-gray-200 rounded-full h-2 mr-3 lg:mr-4">
+        {% if active_items > 0 %}
+        <div class="bg-red-500 h-2 rounded-full" style="width: {% widthratio lost_items active_items 100 %}%"></div>
+        {% endif %}
+      </div>
+      <span class="text-xs lg:text-sm text-gray-600">{% if active_items > 0 %}{% widthratio lost_items active_items 100 %}{% else %}0{% endif %}%</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mobile-tap">
+    <div class="flex items-center justify-between mb-3 lg:mb-4">
+      <h3 class="text-base lg:text-lg font-semibold text-gray-900">Found Items</h3>
+      <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs lg:text-sm font-medium">{{ found_items }}</span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-full bg-gray-200 rounded-full h-2 mr-3 lg:mr-4">
+        {% if active_items > 0 %}
+        <div class="bg-green-500 h-2 rounded-full" style="width: {% widthratio found_items active_items 100 %}%"></div>
+        {% endif %}
+      </div>
+      <span class="text-xs lg:text-sm text-gray-600">{% if active_items > 0 %}{% widthratio found_items active_items 100 %}{% else %}0{% endif %}%</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mobile-tap">
+    <div class="flex items-center justify-between mb-3 lg:mb-4">
+      <h3 class="text-base lg:text-lg font-semibold text-gray-900">Returned Items</h3>
+      <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs lg:text-sm font-medium">{{ returned_items }}</span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-full bg-gray-200 rounded-full h-2 mr-3 lg:mr-4">
+        {% if active_items > 0 %}
+        <div class="bg-blue-500 h-2 rounded-full" style="width: {% widthratio returned_items active_items 100 %}%"></div>
+        {% endif %}
+      </div>
+      <span class="text-xs lg:text-sm text-gray-600">{% if active_items > 0 %}{% widthratio returned_items active_items 100 %}{% else %}0{% endif %}%</span>
+    </div>
+  </div>
+</div>
+
+<!-- Charts and Lists Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
+  <!-- Top Locations -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mobile-tap">
+    <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-200">
+      <h3 class="text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <i class="fas fa-map-marker-alt text-amherst-purple"></i>
+        Top Locations
+      </h3>
+    </div>
+    <div class="p-4 lg:p-6">
+      {% for stat in location_stats %}
+        <div class="flex items-center justify-between py-2 lg:py-3 {% if not forloop.last %}border-b border-gray-100{% endif %}">
+          <div class="flex items-center gap-2 lg:gap-3">
+            <div class="w-6 h-6 lg:w-8 lg:h-8 bg-amherst-purple rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-bold">
+              {{ forloop.counter }}
+            </div>
+            <span class="font-medium text-gray-900 text-sm lg:text-base">{{ stat.location__name|default:"Unknown Location" }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-12 lg:w-16 bg-gray-200 rounded-full h-2">
+              {% if location_stats and location_stats.0.count > 0 %}
+              <div class="bg-amherst-purple h-2 rounded-full" style="width: {% widthratio stat.count location_stats.0.count 100 %}%"></div>
+              {% endif %}
+            </div>
+            <span class="text-xs lg:text-sm font-semibold text-gray-600">{{ stat.count }}</span>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-gray-500 text-center py-6 lg:py-8 text-sm lg:text-base">No location data available</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Top Reporters -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mobile-tap">
+    <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-200">
+      <h3 class="text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <i class="fas fa-users text-amherst-purple"></i>
+        Top Reporters
+      </h3>
+    </div>
+    <div class="p-4 lg:p-6">
+      {% for reporter in top_reporters %}
+        <div class="flex items-center justify-between py-2 lg:py-3 {% if not forloop.last %}border-b border-gray-100{% endif %}">
+          <div class="flex items-center gap-2 lg:gap-3">
+            <div class="w-6 h-6 lg:w-8 lg:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-bold">
+              {{ forloop.counter }}
+            </div>
+            <div>
+              <span class="font-medium text-gray-900 text-sm lg:text-base">
+                {% if reporter.reported_by__first_name %}
+                  {{ reporter.reported_by__first_name }} {{ reporter.reported_by__last_name }}
+                {% else %}
+                  {{ reporter.reported_by__username }}
+                {% endif %}
+              </span>
+              <p class="text-xs text-gray-500">@{{ reporter.reported_by__username }}</p>
+            </div>
+          </div>
+          <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs lg:text-sm font-medium">{{ reporter.count }}</span>
+        </div>
+      {% empty %}
+        <p class="text-gray-500 text-center py-6 lg:py-8 text-sm lg:text-base">No reporter data available</p>
+      {% endfor %}
+      
+      {% if anonymous_reports %}
+      <div class="mt-3 lg:mt-4 pt-3 lg:pt-4 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <span class="text-xs lg:text-sm text-gray-600 flex items-center gap-2">
+            <i class="fas fa-user-secret text-gray-400"></i>
+            Anonymous Reports
+          </span>
+          <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs lg:text-sm font-medium">{{ anonymous_reports }}</span>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Monthly Trends -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6 lg:mb-8 mobile-tap">
+  <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-200">
+    <h3 class="text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-2">
+      <i class="fas fa-chart-line text-amherst-purple"></i>
+      Monthly Trends (Last 6 Months)
+    </h3>
+  </div>
+  <div class="p-4 lg:p-6">
+    <div class="flex items-end justify-between h-24 lg:h-32 gap-1 lg:gap-2">
+      {% for month in monthly_trends %}
+        {% if forloop.first %}
+          <!-- Store the max value for percentage calculations -->
+          <script>var maxMonthlyCount = {{ month.count }};</script>
+        {% endif %}
+        <div class="flex flex-col items-center flex-1">
+          <div class="w-full bg-amherst-purple rounded-t flex items-end justify-center text-white text-xs font-medium"
+               style="height: {% if month.count > 0 %}{% widthratio month.count 50 100 %}px{% else %}2px{% endif %}; min-height: 2px; max-height: 80px;"
+               title="{{ month.count }} items in {{ month.month }}">
+            {% if month.count > 0 and month.count < 10 %}{{ month.count }}{% endif %}
+          </div>
+          <span class="text-xs text-gray-600 mt-2 text-center">{{ month.month|slice:":3" }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Recent Items -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <h3 class="text-base lg:text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <i class="fas fa-clock text-amherst-purple"></i>
+        Recent Items
+      </h3>
+      <a href="{% url 'staff:items' %}" class="text-amherst-purple hover:text-amherst-darkpurple font-medium text-xs lg:text-sm flex items-center gap-1 mobile-tap">
+        View All
+        <i class="fas fa-arrow-right text-xs"></i>
+      </a>
+    </div>
+  </div>
+  
+  <div class="divide-y divide-gray-200">
+    {% for item in recent %}
+      <div class="p-4 lg:p-6 hover:bg-gray-50 transition-colors duration-150 mobile-tap">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                {% if item.status == 'Lost' %}bg-red-100 text-red-800
+                {% elif item.status == 'Found' %}bg-green-100 text-green-800
+                {% elif item.status == 'Returned' %}bg-blue-100 text-blue-800
+                {% endif %}">
+                {{ item.status }}
+              </span>
+              <a href="{% url 'staff:item_detail' item.pk %}" class="text-base lg:text-lg font-medium text-amherst-purple hover:text-amherst-darkpurple truncate">
+                #{{ item.pk }} · {{ item.name }}
+              </a>
+              {% if item.image_recognition_result %}
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                <i class="fas fa-robot mr-1"></i>
+                AI
+              </span>
+              {% endif %}
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 text-xs lg:text-sm text-gray-600">
+              <span class="flex items-center gap-1">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ item.location|default:"No location" }}
+              </span>
+              <span class="flex items-center gap-1">
+                <i class="fas fa-user"></i>
+                {{ item.reported_by|default:"Anonymous" }}
+              </span>
+              <span class="flex items-center gap-1">
+                <i class="fas fa-clock"></i>
+                {{ item.date_reported|date:"M d, Y H:i" }}
+              </span>
+            </div>
+          </div>
+          <a href="{% url 'staff:item_detail' item.pk %}" class="ml-2 lg:ml-4 text-gray-400 hover:text-amherst-purple mobile-tap">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
     {% empty %}
-      <li class="p-3">No items yet.</li>
+      <div class="p-6 lg:p-8 text-center">
+        <i class="fas fa-inbox text-gray-300 text-3xl lg:text-4xl mb-3 lg:mb-4"></i>
+        <p class="text-gray-500 text-sm lg:text-base">No items yet.</p>
+      </div>
     {% endfor %}
-  </ul>
+  </div>
 </div>
+
+<script>
+  // Mobile sidebar toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobileMenuButton');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      sidebarOverlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebarFunc() {
+      sidebar.classList.add('-translate-x-full');
+      sidebarOverlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    if (mobileMenuButton) {
+      mobileMenuButton.addEventListener('click', openSidebar);
+    }
+    
+    if (closeSidebar) {
+      closeSidebar.addEventListener('click', closeSidebarFunc);
+    }
+    
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', closeSidebarFunc);
+    }
+    
+    // Close sidebar when clicking on a nav link (mobile)
+    const navLinks = document.querySelectorAll('.nav-item');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.innerWidth < 1024) {
+          closeSidebarFunc();
+        }
+      });
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 1024) {
+        sidebar.classList.remove('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      } else {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  });
+</script>
 {% endblock %}
